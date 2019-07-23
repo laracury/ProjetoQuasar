@@ -1,6 +1,6 @@
 <script>
 import { mapActions } from 'vuex'
-// import { SessionStorage } from 'quasar'
+import { SessionStorage } from 'quasar'
 export default {
   name: 'login',
   data () {
@@ -8,8 +8,8 @@ export default {
       url: '',
       id: '',
       login: {
-        email: '',
-        password: ''
+        email: 'alves1234@gmail.com',
+        password: '1234'
       }
     }
   },
@@ -23,7 +23,7 @@ export default {
       this['TaskStore/doLogin']({ DATA, URL, ID, ACTION })
         .then((data) => {
           // console.log(data) => usado só pra ver se tava funcionando
-          // sessionStorage.set('token', data) // o token faz parte do backEnd
+          SessionStorage.set('token', data) // o token faz parte do backEnd
           this.$router.push('/')
         })
     }
@@ -53,7 +53,7 @@ export default {
               label="Senha"
               type="password"
             />
-            <q-btn @click="doLogin()" class="full-width" color="primary">Login</q-btn>
+            <q-btn @click="doLogin()" class="full-width" color="primary">Login</q-btn> <!-- evento de click para funcionar o botão e ir prara outra tela -->
           </div>
           <router-link to="/register">Não tem uma conta? Clique aqui e faça ja!!</router-link>
         </div>

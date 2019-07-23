@@ -1,15 +1,14 @@
 <script>
 import _ from 'lodash'
+import { mapActions } from 'vuex'
 export default {
   name: 'Tarefas',
   data () {
     return {
       tarefa: {
-        titulo: '',
-        descricao: '',
-        data: '',
-        hora: '',
-        feito: false
+        title: '',
+        description: '',
+        doneAt: ''
       },
       tarefaID: null,
       lista: [],
@@ -18,8 +17,8 @@ export default {
   },
   computed: {
     filtro () {
-      var filtrarLista = _.filter(this.getLista, (o) => {
-        return o.feito === false
+      var filtrarLista = _.filter(this.$store.getters['TaskStore/PegarLista'], (o) => {
+        return o.status === 'open'
       })
       return filtrarLista
     },
@@ -28,34 +27,16 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['TaskStore/saveTask']), // passa o nome do módulo(TaskStore) mais o nome que colocou no action
     adicionarTarefa () {
-      // não adiciona tarefa se estiver em branco
-      if (this.tarefaID === null) {
-        /* o commit salva, está recenbendo como parâmetro */
-        /* o nome do Store com o nome dado no mutation e depois um objeto */
-        this.$store.commit('TaskStore/SalvarLista', { titulo: this.tarefa.titulo, descricao: this.tarefa.descricao, data: this.tarefa.data, hora: this.tarefa.hora, feito: this.tarefa.feito })
-        this.$q.localStorage.set('tarefas', this.lista)
-        this.tarefa = {}
-        this.prompt = false
-      } else {
-        const listUpdated = {
-          titulo: this.tarefa.titulo,
-          descricao: this.tarefa.descricao,
-          data: this.tarefa.data,
-          hora: this.tarefa.hora,
-          feito: this.tarefa.feito
-        }
-        this.lista[this.tarefaID] = listUpdated
-        this.tarefa = {
-          titulo: '',
-          descricao: '',
-          data: '',
-          hora: '',
-          feito: false
-        }
-        this.tarefaID = null
-        this.prompt = false
-      }
+      const URL = '/task'
+      const ID = ''
+      const DATA = this.tarefa
+      const ACTION = 'save'
+      this['TaskStore/saveTask']({ DATA, URL, ID, ACTION })
+        .then((data) => {
+          console.log(data)
+        })
     },
     // edita a tarefa assim que clicar nela
     editarTarefa (index) {
@@ -80,9 +61,7 @@ export default {
       this.tarefa = {
         titulo: '',
         descricao: '',
-        data: '',
-        hora: '',
-        feito: false
+        data: ''
       }
     }
   },
@@ -98,7 +77,7 @@ export default {
       <ul>
         <li v-for="(i, index) in filtro" :key="index">
           <q-checkbox v-model="i.feito" />
-          <span @click="editarTarefa(index)">{{i.titulo}}</span>
+          <span @click="editarTarefa(index)">{{i.title}}</span>
         </li>
       </ul>
     </div>
@@ -112,24 +91,23 @@ export default {
             <div class="text-h6">Adicionar Tarefa</div>
           </q-card-section>
           <q-card-section>
-            <q-input v-model="tarefa.titulo" autofocus @keyup.enter="prompt = false" label="Título" />
-            <q-input v-model="tarefa.descricao" @keyup.enter="prompt = false" label="Descrição" />
-            <q-input filled v-model="tarefa.data">
+            <q-input v-model="tarefa.title" autofocus @keyup.enter="prompt = false" label="Título" />
+            <q-input v-model="tarefa.description" @keyup.enter="prompt = false" label="Descrição" />
+            <q-input filled v-model="tarefa.doneAt">
               <template v-slot:prepend> <!-- calendario -->
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy transition-show="scale" transition-hide="scale">
-                    <q-date v-model="tarefa.data" mask="YYYY-MM-DD HH:mm" />
+                    <q-date v-model="tarefa.doneAt" mask="YYYY-MM-DD HH:mm" />
                   </q-popup-proxy>
                 </q-icon>
               </template>
-
-              <template v-slot:append> <!-- insere data -->
+              <!-- <template v-slot:append>
                 <q-icon name="access_time" class="cursor-pointer">
                   <q-popup-proxy transition-show="scale" transition-hide="scale">
                     <q-time v-model="tarefa.data" mask="YYYY-MM-DD HH:mm" format24h />
                   </q-popup-proxy>
                 </q-icon>
-              </template>
+              </template> -->
             </q-input>
           </q-card-section> <!-- botões de cancelar e adicionar tarefa -->
           <q-card-actions align="right" class="text-primary">

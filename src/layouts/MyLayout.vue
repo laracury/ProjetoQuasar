@@ -27,8 +27,8 @@
         <q-avatar size="75px">
           <img src="/statics/icons/DollifyLara.jpg">
         </q-avatar>
-        <h1>Lara</h1>
-        <p>laracury2@gmail.com</p>
+        <h1>{{getUser.name}}</h1>
+        <p>{{getUser.email}}</p>
       </div>
       <q-list>
         <q-item clickable to="/">
@@ -66,6 +66,7 @@
 
 <script>
 import { openURL } from 'quasar'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'MyLayout',
@@ -75,7 +76,24 @@ export default {
     }
   },
   methods: {
-    openURL
+    openURL,
+    ...mapActions(['TaskStore/recuperarTarefas']), // passa o nome do módulo(TaskStore) mais o nome que colocou no action
+    getTasks () { // cria um método pra este action e passa os campos que vai usar
+      const URL = '/task'
+      const ID = ''
+      const ACTION = 'get'
+      this['TaskStore/recuperarTarefas']({ URL, ID, ACTION })
+        .then((data) => {
+        })
+    }
+  },
+  mounted () {
+    this.getTasks()
+  },
+  computed: {
+    getUser () {
+      return this.$store.getters['TaskStore/getUser']
+    }
   }
 }
 </script>
