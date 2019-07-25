@@ -8,8 +8,8 @@ export default {
       url: '',
       id: '',
       login: {
-        email: 'alves1234@gmail.com',
-        password: '1234'
+        email: '',
+        password: ''
       }
     }
   },

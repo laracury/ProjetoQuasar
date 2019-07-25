@@ -6,7 +6,11 @@ var axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use(function (config) {
-  config.headers.authorization = SessionStorage.getItem('token').token
+  if (!SessionStorage.getItem('token')) {
+    config.headers.authorization = ''
+  } else {
+    config.headers.authorization = SessionStorage.getItem('token').token
+  }
   return config
 }, function (error) {
   // Do something with request error
